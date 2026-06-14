@@ -1,4 +1,35 @@
-/* Hero Section Styling */
+/* General Theme */
+body {
+    background-color: #0a0a0a;
+    color: #ffffff;
+    font-family: sans-serif;
+    margin: 0;
+}
+
+/* Navbar */
+nav {
+    background-color: #121212;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 2px solid #6a0dad;
+}
+
+.logo {
+    color: #a855f7;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+button {
+    background-color: #6a0dad;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+}
+
+/* Hero Section */
 .hero {
     padding: 40px 20px;
     background: #1a1a1a;
@@ -6,10 +37,10 @@
     border-bottom: 2px solid #6a0dad;
 }
 
-/* Grid Layout for Posters */
+/* Grid Layout */
 .grid-container {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Two posters per row */
+    grid-template-columns: 1fr 1fr;
     gap: 15px;
     padding: 20px;
 }
