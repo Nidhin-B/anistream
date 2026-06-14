@@ -3,61 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AniStream</title>
+    <title>AniStream Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { background: #000; color: white; }
-        .hidden { display: none; }
-    </style>
 </head>
-<body>
-    <!-- Header -->
-    <header class="p-4 bg-black sticky top-0 border-b border-purple-900 flex justify-between items-center z-10">
-        <h1 class="text-xl font-black italic">Ani<span class="text-purple-500">Stream</span></h1>
-        <input type="text" id="search" placeholder="Search..." class="bg-gray-900 p-2 rounded-lg text-sm w-32 border border-purple-800">
-    </header>
+<body class="bg-black text-gray-200 min-h-screen">
 
-    <!-- Grid -->
-    <div id="grid" class="grid grid-cols-2 gap-4 p-4"></div>
+    <nav class="sticky top-0 z-20 bg-black/90 border-b border-purple-900/50 p-4 flex justify-between items-center backdrop-blur-md">
+        <h1 class="text-xl font-black italic tracking-tighter text-white">Ani<span class="text-purple-500">Stream</span></h1>
+        <input type="text" id="search" placeholder="Search anime..." class="bg-gray-900 border border-purple-900 rounded-full px-4 py-1 text-sm focus:outline-none focus:border-purple-500">
+    </nav>
 
-    <!-- Episode Drawer Overlay -->
-    <div id="drawer" class="hidden fixed inset-0 bg-black/95 z-50 p-6 overflow-y-auto">
-        <button onclick="document.getElementById('drawer').classList.add('hidden')" class="text-purple-400 mb-4 font-bold">← Close</button>
-        <h2 id="title" class="text-2xl font-bold mb-4"></h2>
-        <div id="episodes" class="grid grid-cols-4 gap-2"></div>
+    <main id="grid" class="p-4 grid grid-cols-2 gap-4">
+        </main>
+
+    <div id="drawer" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-xl p-6 overflow-y-auto">
+        <button onclick="document.getElementById('drawer').classList.add('hidden')" class="text-purple-400 font-bold mb-6">← BACK</button>
+        <img id="detailImg" class="w-full h-64 object-cover rounded-2xl mb-4 shadow-lg shadow-purple-900/20">
+        <h2 id="detailTitle" class="text-3xl font-black mb-4 leading-tight"></h2>
+        <p id="detailDesc" class="text-sm text-gray-400 mb-6"></p>
+        <div id="epGrid" class="grid grid-cols-4 gap-2"></div>
     </div>
 
     <script>
         const grid = document.getElementById('grid');
-        const drawer = document.getElementById('drawer');
+        const search = document.getElementById('search');
 
-        async function fetchAnime(query) {
-            grid.innerHTML = "Loading...";
-            const res = await fetch(`https://api.jikan.moe/v4/anime?q=${query}&sfw`);
+        async function fetchAnime(q) {
+            grid.innerHTML = "<p class='col-span-2 text-center text-purple-500'>Loading database...</p>";
+            const res = await fetch(`https://api.jikan.moe/v4/anime?q=${q}&sfw`);
             const data = await res.json();
             grid.innerHTML = "";
             data.data.forEach(a => {
                 const div = document.createElement('div');
-                div.className = "bg-gray-900 rounded-xl p-2 cursor-pointer border border-purple-900/50";
-                div.innerHTML = `<img src="${a.images.jpg.image_url}" class="rounded-lg w-full h-48 object-cover">
-                                 <p class="text-xs mt-2 truncate">${a.title}</p>`;
-                div.onclick = () => showDrawer(a);
+                div.className = "bg-gray-900/50 rounded-2xl border border-gray-800 overflow-hidden cursor-pointer transition-transform hover:scale-[1.02]";
+                div.innerHTML = `<img src="${a.images.jpg.image_url}" class="w-full h-56 object-cover">
+                                 <div class="p-3"><p class="text-xs font-bold truncate">${a.title}</p></div>`;
+                div.onclick = () => showDetail(a);
                 grid.appendChild(div);
             });
         }
 
-        function showDrawer(anime) {
-            document.getElementById('title').innerText = anime.title;
-            const epContainer = document.getElementById('episodes');
-            epContainer.innerHTML = `<p class="text-sm text-gray-400">Episodes available: ${anime.episodes || 'TBA'}</p>`;
-            drawer.classList.remove('hidden');
+        function showDetail(a) {
+            document.getElementById('detailImg').src = a.images.jpg.image_url;
+            document.getElementById('detailTitle').innerText = a.title;
+            document.getElementById('detailDesc').innerText = a.synopsis ? a.synopsis.substring(0, 150) + "..." : "No description available.";
+            
+            const epGrid = document.getElementById('epGrid');
+            epGrid.innerHTML = "";
+            for(let i=1; i<=Math.min(a.episodes || 12, 20); i++) {
+                const btn = document.createElement('button');
+                btn.className = "bg-purple-900/40 p-2 rounded-lg text-xs font-bold hover:bg-purple-600";
+                btn.innerText = i;
+                btn.onclick = () => alert("Stream starting for Episode " + i);
+                epGrid.appendChild(btn);
+            }
+            document.getElementById('drawer').classList.remove('hidden');
         }
 
-        document.getElementById('search').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') fetchAnime(e.target.value);
-        });
-
-        fetchAnime("One Piece");
+        search.onchange = (e) => fetchAnime(e.target.value);
+        fetchAnime("Naruto");
     </script>
 </body>
 </html>
