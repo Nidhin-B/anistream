@@ -3,54 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AniStream Pro</title>
+    <title>AniStream</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        body { background-color: #05050a; color: white; font-family: sans-serif; }
+        body { background: #000; color: white; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
-    <header class="p-4 flex justify-between items-center bg-black/80 sticky top-0 z-40 border-b border-purple-900">
+    <!-- Header -->
+    <header class="p-4 bg-black sticky top-0 border-b border-purple-900 flex justify-between items-center z-10">
         <h1 class="text-xl font-black italic">Ani<span class="text-purple-500">Stream</span></h1>
-        <input type="text" id="search" placeholder="Search anime..." class="bg-gray-900 p-2 rounded-lg text-sm w-40 border border-purple-800">
+        <input type="text" id="search" placeholder="Search..." class="bg-gray-900 p-2 rounded-lg text-sm w-32 border border-purple-800">
     </header>
 
+    <!-- Grid -->
     <div id="grid" class="grid grid-cols-2 gap-4 p-4"></div>
+
+    <!-- Episode Drawer Overlay -->
+    <div id="drawer" class="hidden fixed inset-0 bg-black/95 z-50 p-6 overflow-y-auto">
+        <button onclick="document.getElementById('drawer').classList.add('hidden')" class="text-purple-400 mb-4 font-bold">← Close</button>
+        <h2 id="title" class="text-2xl font-bold mb-4"></h2>
+        <div id="episodes" class="grid grid-cols-4 gap-2"></div>
+    </div>
 
     <script>
         const grid = document.getElementById('grid');
-        const search = document.getElementById('search');
+        const drawer = document.getElementById('drawer');
 
-        // This is the "Engine" that fetches real data
         async function fetchAnime(query) {
-            grid.innerHTML = "<p class='text-purple-400'>Syncing nodes...</p>";
-            try {
-                const res = await fetch(`https://api.jikan.moe/v4/anime?q=${query}&sfw`);
-                const data = await res.json();
-                grid.innerHTML = "";
-                
-                data.data.forEach(a => {
-                    const div = document.createElement('div');
-                    div.className = "bg-[#09090f] p-2 rounded-xl border border-purple-900";
-                    div.innerHTML = `
-                        <img src="${a.images.jpg.image_url}" class="rounded-lg w-full h-48 object-cover">
-                        <p class="text-xs mt-2 font-bold truncate">${a.title}</p>
-                    `;
-                    grid.appendChild(div);
-                });
-            } catch (err) {
-                grid.innerHTML = "<p class='text-red-500'>Connection failed.</p>";
-            }
+            grid.innerHTML = "Loading...";
+            const res = await fetch(`https://api.jikan.moe/v4/anime?q=${query}&sfw`);
+            const data = await res.json();
+            grid.innerHTML = "";
+            data.data.forEach(a => {
+                const div = document.createElement('div');
+                div.className = "bg-gray-900 rounded-xl p-2 cursor-pointer border border-purple-900/50";
+                div.innerHTML = `<img src="${a.images.jpg.image_url}" class="rounded-lg w-full h-48 object-cover">
+                                 <p class="text-xs mt-2 truncate">${a.title}</p>`;
+                div.onclick = () => showDrawer(a);
+                grid.appendChild(div);
+            });
         }
 
-        // Trigger search on "Enter" key
-        search.addEventListener('keypress', (e) => {
+        function showDrawer(anime) {
+            document.getElementById('title').innerText = anime.title;
+            const epContainer = document.getElementById('episodes');
+            epContainer.innerHTML = `<p class="text-sm text-gray-400">Episodes available: ${anime.episodes || 'TBA'}</p>`;
+            drawer.classList.remove('hidden');
+        }
+
+        document.getElementById('search').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') fetchAnime(e.target.value);
         });
 
-        // Initial load
-        fetchAnime("Naruto");
+        fetchAnime("One Piece");
     </script>
 </body>
 </html>
