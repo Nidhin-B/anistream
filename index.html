@@ -12,19 +12,31 @@
         <button>Sign in</button>
     </nav>
 
-    <!-- Hero Section -->
     <div class="hero">
-        <h1>Featured Anime</h1>
-        <p>Placeholder for your featured anime description.</p>
+        <h1>Welcome to AniStream</h1>
+        <p>Your hub for trending anime.</p>
         <button>PLAY NOW</button>
     </div>
 
-    <!-- Grid for Anime Posters -->
-    <div class="grid-container">
-        <div class="card">Anime 1</div>
-        <div class="card">Anime 2</div>
-        <div class="card">Anime 3</div>
-        <div class="card">Anime 4</div>
-    </div>
+    <div class="grid-container" id="anime-grid">
+        </div>
+
+    <script>
+        fetch('https://api.jikan.moe/v4/top/anime?limit=10')
+            .then(response => response.json())
+            .then(data => {
+                const grid = document.getElementById('anime-grid');
+                data.data.forEach(anime => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <img src="${anime.images.jpg.image_url}" alt="${anime.title}" style="width:100%; border-radius:4px;">
+                        <p style="font-size: 0.9rem; margin-top: 10px;">${anime.title}</p>
+                    `;
+                    grid.appendChild(card);
+                });
+            })
+            .catch(err => console.error('Error fetching data:', err));
+    </script>
 </body>
 </html>
