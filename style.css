@@ -1,56 +1,42 @@
-/* Reset and Base */
-* { box-sizing: border-box; }
-body {
-    background-color: #050505;
-    color: #ffffff;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    margin: 0;
-    padding: 0;
+/* Update your CSS to lock in the purple theme */
+
+/* 1. Define your brand color at the top */
+:root {
+    --brand-purple: #a855f7; 
 }
 
-/* Nav */
+/* 2. Apply to Buttons */
+button {
+    background-color: var(--brand-purple); /* Force purple */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* 3. Navigation fix */
 nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 15px 20px;
     background: #0f0f0f;
-    border-bottom: 1px solid #222;
-}
-.logo { font-size: 1.4rem; font-weight: 800; color: #a855f7; }
-
-/* Hero */
-.hero { padding: 40px 20px; text-align: center; }
-.hero h1 { font-size: 1.8rem; margin-bottom: 10px; }
-
-/* Grid & Cards - The "App" Look */
-.grid-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px; /* Increased gap */
-    padding: 0 16px 20px 16px;
+    border-bottom: 2px solid var(--brand-purple); /* Purple line */
 }
 
+/* 4. Keep your cards looking sharp */
 .card {
     background-color: #121212;
     border-radius: 10px;
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
+    border: 1px solid #333; /* Optional: adds a subtle border */
 }
 
-.card img {
-    width: 100%;
-    aspect-ratio: 2/3; /* Keeps all posters uniform */
-    object-fit: cover;
-}
-
-.card p {
-    padding: 10px 8px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+/* 5. Hero Section accent */
+.hero { 
+    padding: 40px 20px; 
+    text-align: center; 
+    border-bottom: 2px solid var(--brand-purple);
 }
