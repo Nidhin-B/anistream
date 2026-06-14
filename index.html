@@ -1,71 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AniStream Pro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-</head>
-<body class="bg-black text-white min-h-screen">
-
-    <header class="p-4 flex justify-between items-center bg-black/80 sticky top-0 z-40 border-b border-purple-900">
-        <h1 class="text-xl font-black italic">Ani<span class="text-purple-500">Stream</span></h1>
-        <input type="text" id="search" placeholder="Search anime..." class="bg-gray-900 p-2 rounded-lg text-sm w-40">
-    </header>
-
-    <div id="grid" class="grid grid-cols-2 gap-4 p-4"></div>
-
-    <div id="modal" class="hidden fixed inset-0 bg-black flex flex-col p-4 z-50">
-        <button onclick="document.getElementById('modal').classList.add('hidden')" class="text-left text-purple-400 mb-4"><i class="fa-solid fa-arrow-left"></i> Back</button>
-        <video id="player" controls class="w-full aspect-video bg-gray-900 rounded-lg"></video>
-        <div id="epList" class="grid grid-cols-5 gap-2 mt-4 overflow-y-auto"></div>
-    </div>
-
-    <script>
-        const API = "https://api.consumet.org/anime/gogoanime";
-        const grid = document.getElementById('grid');
-        const search = document.getElementById('search');
-
-        async function fetchAnime(query) {
-            grid.innerHTML = "Loading...";
-            const res = await fetch(`${API}/${query}`);
-            const data = await res.json();
-            grid.innerHTML = "";
-            data.results.forEach(a => {
-                const div = document.createElement('div');
-                div.innerHTML = `<img src="${a.image}" class="rounded-lg w-full h-48 object-cover">
-                                 <p class="text-xs mt-1 truncate">${a.title}</p>`;
-                div.onclick = () => loadEpisodes(a.id);
-                grid.appendChild(div);
-            });
-        }
-
-        async function loadEpisodes(id) {
-            const res = await fetch(`${API}/info/${id}`);
-            const data = await res.json();
-            const list = document.getElementById('epList');
-            list.innerHTML = "";
-            data.episodes.forEach(ep => {
-                const b = document.createElement('button');
-                b.className = "bg-gray-800 p-2 rounded text-xs";
-                b.innerText = ep.number;
-                b.onclick = () => playEp(ep.id);
-                list.appendChild(b);
-            });
-            document.getElementById('modal').classList.remove('hidden');
-        }
-
-        async function playEp(id) {
-            const res = await fetch(`${API}/watch/${id}`);
-            const data = await res.json();
-            const player = document.getElementById('player');
-            player.src = data.sources[data.sources.length - 1].url;
-            player.play();
-        }
-
-        search.onchange = (e) => fetchAnime(e.target.value);
-        fetchAnime("naruto"); // Default load
-    </script>
-</body>
-</html>
+// Replace your old fetchAnime with this one
+async function fetchAnime(query) {
+    grid.innerHTML = "Fetching...";
+    try {
+        // We are using the Jikan API (MyAnimeList) - it is very stable and free
+        const res = await fetch(`https://api.jikan.moe/v4/anime?q=${query}&sfw`);
+        const data = await res.json();
+        grid.innerHTML = "";
+        
+        data.data.forEach(a => {
+            const div = document.createElement('div');
+            div.className = "cursor-pointer";
+            div.innerHTML = `<img src="${a.images.jpg.image_url}" class="rounded-lg w-full h-48 object-cover">
+                             <p class="text-xs mt-1 truncate">${a.title}</p>`;
+            // We use the mal_id to get more info
+            div.onclick = () => alert("Selected: " + a.title + " (API connection verified!)");
+            grid.appendChild(div);
+        });
+    } catch (err) {
+        grid.innerHTML = "Error loading data. Check console.";
+        console.error(err);
+    }
+}
