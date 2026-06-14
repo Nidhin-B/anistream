@@ -18,8 +18,7 @@
         <button>PLAY NOW</button>
     </div>
 
-    <div class="grid-container" id="anime-grid">
-        </div>
+    <div class="grid-container" id="anime-grid"></div>
 
     <script>
         fetch('https://api.jikan.moe/v4/top/anime?limit=10')
@@ -30,13 +29,13 @@
                     const card = document.createElement('div');
                     card.className = 'card';
                     card.innerHTML = `
-                        <img src="${anime.images.jpg.image_url}" alt="${anime.title}" style="width:100%; border-radius:4px;">
-                        <p style="font-size: 0.9rem; margin-top: 10px;">${anime.title}</p>
+                        <img src="${anime.images.jpg.image_url}" alt="${anime.title}">
+                        <p>${anime.title}</p>
                     `;
                     grid.appendChild(card);
                 });
             })
-            .catch(err => console.error('Error fetching data:', err));
+            .catch(err => console.error('Error:', err));
     </script>
 </body>
 </html>
