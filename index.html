@@ -3,64 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AniStream Pro</title>
+    <title>AniStream</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* This CSS recreates the "Anikoto" dark, modern interface */
+        body { background-color: #0b0e14; color: #ffffff; font-family: 'Inter', sans-serif; }
+        .nav-glass { background: rgba(18, 18, 20, 0.95); backdrop-filter: blur(10px); }
+        .anime-card { transition: all 0.3s ease; }
+        .anime-card:hover { transform: scale(1.05); border: 1px solid #6366f1; }
+    </style>
 </head>
-<body class="bg-black text-gray-200 min-h-screen">
-
-    <nav class="sticky top-0 z-20 bg-black/90 border-b border-purple-900/50 p-4 flex justify-between items-center backdrop-blur-md">
-        <h1 class="text-xl font-black italic tracking-tighter text-white">Ani<span class="text-purple-500">Stream</span></h1>
-        <input type="text" id="search" placeholder="Search anime..." class="bg-gray-900 border border-purple-900 rounded-full px-4 py-1 text-sm focus:outline-none focus:border-purple-500">
+<body>
+    <nav class="nav-glass p-4 flex justify-between items-center sticky top-0 z-50 border-b border-gray-800">
+        <h1 class="text-xl font-bold tracking-tighter">ani<span class="text-purple-500">stream</span></h1>
+        <input type="text" id="search" class="bg-gray-800 rounded-full px-4 py-1 text-sm border border-gray-700" placeholder="Search...">
     </nav>
 
-    <main id="grid" class="p-4 grid grid-cols-2 gap-4">
-        </main>
-
-    <div id="drawer" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-xl p-6 overflow-y-auto">
-        <button onclick="document.getElementById('drawer').classList.add('hidden')" class="text-purple-400 font-bold mb-6">← BACK</button>
-        <img id="detailImg" class="w-full h-64 object-cover rounded-2xl mb-4 shadow-lg shadow-purple-900/20">
-        <h2 id="detailTitle" class="text-3xl font-black mb-4 leading-tight"></h2>
-        <p id="detailDesc" class="text-sm text-gray-400 mb-6"></p>
-        <div id="epGrid" class="grid grid-cols-4 gap-2"></div>
-    </div>
+    <main id="grid" class="p-4 grid grid-cols-2 md:grid-cols-4 gap-4"></main>
 
     <script>
         const grid = document.getElementById('grid');
-        const search = document.getElementById('search');
-
         async function fetchAnime(q) {
-            grid.innerHTML = "<p class='col-span-2 text-center text-purple-500'>Loading database...</p>";
             const res = await fetch(`https://api.jikan.moe/v4/anime?q=${q}&sfw`);
             const data = await res.json();
             grid.innerHTML = "";
             data.data.forEach(a => {
                 const div = document.createElement('div');
-                div.className = "bg-gray-900/50 rounded-2xl border border-gray-800 overflow-hidden cursor-pointer transition-transform hover:scale-[1.02]";
-                div.innerHTML = `<img src="${a.images.jpg.image_url}" class="w-full h-56 object-cover">
-                                 <div class="p-3"><p class="text-xs font-bold truncate">${a.title}</p></div>`;
-                div.onclick = () => showDetail(a);
+                div.className = "anime-card bg-gray-900 p-2 rounded-lg cursor-pointer";
+                div.innerHTML = `<img src="${a.images.jpg.image_url}" class="w-full h-56 object-cover rounded-md">
+                                 <p class="text-xs mt-2 font-semibold truncate">${a.title}</p>`;
+                div.onclick = () => alert("Interactive features activated!");
                 grid.appendChild(div);
             });
         }
-
-        function showDetail(a) {
-            document.getElementById('detailImg').src = a.images.jpg.image_url;
-            document.getElementById('detailTitle').innerText = a.title;
-            document.getElementById('detailDesc').innerText = a.synopsis ? a.synopsis.substring(0, 150) + "..." : "No description available.";
-            
-            const epGrid = document.getElementById('epGrid');
-            epGrid.innerHTML = "";
-            for(let i=1; i<=Math.min(a.episodes || 12, 20); i++) {
-                const btn = document.createElement('button');
-                btn.className = "bg-purple-900/40 p-2 rounded-lg text-xs font-bold hover:bg-purple-600";
-                btn.innerText = i;
-                btn.onclick = () => alert("Stream starting for Episode " + i);
-                epGrid.appendChild(btn);
-            }
-            document.getElementById('drawer').classList.remove('hidden');
-        }
-
-        search.onchange = (e) => fetchAnime(e.target.value);
+        document.getElementById('search').onchange = (e) => fetchAnime(e.target.value);
         fetchAnime("Naruto");
     </script>
 </body>
